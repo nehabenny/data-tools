@@ -93,13 +93,21 @@ class DocsSearchService:
             results = await asyncio.gather(*tasks)
             return "\n\n---\n\n".join(filter(None, results))
 
-    async def _fetch_doc(self, session: aiohttp.ClientSession, path: str) -> str | None:
+    async def _fetch_doc(self, session: aiohttp.ClientSession, path: str) -> str:
         """
         Fetches a single documentation file.
+
+        Args:
+            session (aiohttp.ClientSession): The active HTTP client session.
+            path (str): The relative path to the documentation file (e.g., "intro.md").
+
+        Returns:
+            str: The content of the documentation file on success, 
+                 or a formatted error message string on failure.
         """
         sanitized_path = self._sanitize_path(path)
         if sanitized_path is None:
-            return f"Error: Invalid path {path}"
+            return f"Error: Invalid path {path}" # Now returns a string
         
         url = f"{self.BASE_URL}{sanitized_path}"
         try:
@@ -108,10 +116,10 @@ class DocsSearchService:
                     return await response.text()
                 else:
                     # Optionally log an error here
-                    return f"Error: Could not fetch {url}, status code: {response.status}"
+                    return f"Error: Could not fetch {url}, status code: {response.status}" # Now returns a string
         except Exception as e:
             # Optionally log the exception
-            return f"Error: Exception while fetching {url}: {e}"
+            return f"Error: Exception while fetching {url}: {e}" 
 
 
 docs_search_service = DocsSearchService()
